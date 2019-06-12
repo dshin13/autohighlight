@@ -1,0 +1,4 @@
+data/
+pycache/
+weights/
+logs/
