@@ -227,6 +227,21 @@ def conv3d_bn(x,
     return x
 
 
+# 1x1x1 3d convolution + logit function for video segment classification
+def generate_logit(x, last_conv3d_name, classes):
+    
+    x = conv3d_bn(x, classes, 1, 1, 1, padding='same',
+                   use_bias=True, use_activation_fn=False, use_bn=False, name=last_conv3d_name)
+
+    num_frames_remaining = int(x.shape[1])
+    x = Reshape((num_frames_remaining, classes))(x)
+
+    x = Lambda(lambda x: K.mean(x, axis=1, keepdims=False),
+               output_shape=lambda s: (s[0], s[2]))(x)    
+    
+    return x
+
+
 def Inception_Inflated3d(include_top=True,
                 weights=None,
                 input_tensor=None,

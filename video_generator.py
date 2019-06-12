@@ -45,7 +45,7 @@ class VideoGenerator:
                 break
         
         output = np.array(frames)
-        output = output / 255
+        output = (output / 255) * 2 - 1
                 
         return output
 
