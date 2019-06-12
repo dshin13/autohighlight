@@ -5,33 +5,13 @@ import utils.video_generator
 from models.i3d_inception import Inception_Inflated3d
 from models.i3d_inception import generate_logit
 
-# Keras models and layers
-from keras.models import Model
-from keras.layers import Activation
-from keras.layers import Dropout
+# Keras load_model and optimizer
+from keras.models import load_model
+from keras.optimizers import Adam
 
 # Keras callbacks
 from keras.callbacks import ModelCheckpoint
 from keras.callbacks import CSVLogger
-
-# Single stream 3D convolution model in RGB channel using ImageNet/Kinetics weights
-def RGB_model(NUM_FRAMES, FRAME_HEIGHT, FRAME_WIDTH, NUM_CLASSES, dropout_prob):
-
-    rgb_model = Inception_Inflated3d(
-        include_top=False,
-        weights='rgb_imagenet_and_kinetics',
-        input_shape=(NUM_FRAMES, FRAME_HEIGHT, FRAME_WIDTH, 3))
-
-    x1 = rgb_model.layers[-1].output
-    x1 = Dropout(dropout_prob)(x1)
-
-    x1 = generate_logit(x1, '1x1_Conv3d_rgb_logits', NUM_CLASSES)
-
-    x = Activation('softmax', name='prediction')(x1)
-
-    model = Model(input=rgb_model.input, output=x)
-
-    return model
 
 # helper code to freeze layers
 def freeze_RGB_model(model, trainable=False):
@@ -46,7 +26,7 @@ if __name__ == '__main__':
     test_dir = './data/val'
     train_dir = './data/train'
     dims = (250,224,224,3)
-    batch_size = 4
+    batch_size = 16
     videogen = video_generator.VideoGenerator(train_dir, test_dir, dims, batch_size)
     
     # training/testing data generators and hyperparameters
@@ -55,21 +35,17 @@ if __name__ == '__main__':
     testing_generator = videogen.generate(train_or_test="test")
     testing_steps_per_epoch = len(videogen.filenames_test) // batch_size
     
-    # Input dimensions and dropout probability
-    NUM_FRAMES=250
-    FRAME_HEIGHT=224
-    FRAME_WIDTH=224
-    NUM_CLASSES=2
-    dropout_prob=0.5
+    # Load model
+    test_model = load_model('./weights/0612_RGBonly_3epochs.hdf5')
     
-    # Instantiate model
-    test_model = RGB_model(NUM_FRAMES, FRAME_HEIGHT, FRAME_WIDTH, NUM_CLASSES, dropout_prob)
-    
-    # freeze I3D model
+    # Unfreeze I3D model
     freeze_RGB_model(test_model)
     
+    # Define optimizer
+    opt = Adam(lr=0.0005, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
+    
     # Compile model
-    test_model.compile(optimizer='adam',
+    test_model.compile(optimizer=opt,
               loss='categorical_crossentropy',
               metrics=['accuracy'])
     
