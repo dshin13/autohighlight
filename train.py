@@ -39,7 +39,7 @@ if __name__ == '__main__':
     
     # Define optimizer
     #opt = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
-    opt = SGD(lr=0.002, decay=1e-7, momentum=0.9, nesterov=True)
+    opt = SGD(lr=0.001, decay=1e-7, momentum=0.9, nesterov=True)
     
     # Compile model
     test_model.compile(optimizer=opt,
@@ -47,7 +47,7 @@ if __name__ == '__main__':
               metrics=['accuracy'])
     
     # Set the callbacks
-    checkpointer = ModelCheckpoint(filepath='/tmp/weights.hdf5', verbose=1)
+    checkpointer = ModelCheckpoint(filepath='./weights/weights.{epoch:02d}-{val_loss:.2f}.hdf5', verbose=1)
     csv_logger = CSVLogger('log.csv', append=True, separator=';')
     
     # Fit the model
