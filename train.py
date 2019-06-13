@@ -22,7 +22,7 @@ if __name__ == '__main__':
     val_dir = './data/val'
     train_dir = './data/train'
     dims = (250,224,224,3)
-    batch_size = 6
+    batch_size = 8
     videogen = VideoGenerator(train_dir, val_dir, dims, batch_size)
     
     # training/testing data generators and hyperparameters
