@@ -104,7 +104,7 @@ class VideoGenerator:
                         npy = np.fliplr(npy)
                 if random_crop:
                     horizontal_crop = random.randint(0, npy.shape[2] - npy.shape[1])
-                    npy = npy[:,:,horizontal_crop:,:]
+                    npy = npy[:,:,horizontal_crop:horizontal_crop + npy.shape[1],:]
                     assert npy.shape[1] == npy.shape[2]
             
             # Center crop all validation clips
@@ -112,7 +112,7 @@ class VideoGenerator:
                 npy = self.vid2npy(filename, num_frames=150, random_start=False)
 
                 horizontal_crop = (npy.shape[2] - npy.shape[1])//2
-                npy = npy[:,:,horizontal_crop:,:]
+                npy = npy[:,:,horizontal_crop:horizontal_crop + npy.shape[1],:]
 
             if len(npy.shape) == 3:  # Add colour channel to B&W images
                 npy = np.expand_dims(npy, axis=-1)
