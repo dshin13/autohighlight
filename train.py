@@ -1,5 +1,5 @@
 # Generator class
-import utils.video_generator
+from utils.video_generator import VideoGenerator
 
 # Keras load_model and optimizer
 from keras.models import load_model
@@ -29,7 +29,7 @@ if __name__ == '__main__':
     training_generator = videogen.generate(train_or_val='train')
     training_steps_per_epoch = len(videogen.filenames_train) // batch_size
     validation_generator = videogen.generate(train_or_val="val")
-    validation_steps_per_epoch = len(videogen.filenames_test) // batch_size
+    validation_steps_per_epoch = len(videogen.filenames_val) // batch_size
     
     # Load model
     test_model = load_model('./test_model.hdf5')
