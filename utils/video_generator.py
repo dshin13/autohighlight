@@ -40,8 +40,9 @@ class VideoGenerator:
         total_frames = cap.get(cv2.CAP_PROP_FRAME_COUNT)
         
         if random_start:
-            start_frame = random.randint(0,total_frames - num_frames)
+            start_frame = random.randint(0,total_frames - num_frames - 1)
             cap.set(1, start_frame)
+            print(total_frames, start_frame)
         
         for _ in range(num_frames):
             ret, frame = cap.read()
@@ -58,7 +59,7 @@ class VideoGenerator:
         
         # zero-pad frames if not enough frames
         if output.shape[0] < num_frames:
-            output = np.concatenate(np.zeros((num_frames - output.shape[0], output.shape[1], output.shape[2], output.shape[3])))
+            output = np.concatenate([output, np.zeros((num_frames - output.shape[0], output.shape[1], output.shape[2], output.shape[3]))])
                 
         return output
 
@@ -96,7 +97,7 @@ class VideoGenerator:
             
             # Data augmentation implements horizontal flip and random crop (temporal and spatial)
             if train_or_val == 'train':
-                npy = self.vid2npy(filename, num_frames=150, random_start=True)
+                npy = self.vid2npy(filename, num_frames=150, random_start=random_start)
 
                 if horizontal_flip:
                     flip = random.random()
@@ -109,7 +110,7 @@ class VideoGenerator:
             
             # Center crop all validation clips
             elif train_or_val == 'val':
-                npy = self.vid2npy(filename, num_frames=250, random_start=False)
+                npy = self.vid2npy(filename, num_frames=150, random_start=False)
 
                 horizontal_crop = (npy.shape[2] - npy.shape[1])//2
                 npy = npy[:,:,horizontal_crop:,:]

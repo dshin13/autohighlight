@@ -2,8 +2,8 @@
 # Outputs a file ('test_model.hdf5') in the same directory
 
 # I3D model functions
-from models.i3d_inception import Inception_Inflated3d
-from models.i3d_inception import generate_logit
+from i3d_inception import Inception_Inflated3d
+from i3d_inception import generate_logit
 
 # Keras models and layers
 from keras.models import Model
