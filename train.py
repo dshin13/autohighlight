@@ -53,7 +53,7 @@ if __name__ == '__main__':
     # Fit the model
     test_model.fit_generator(training_generator,
                              steps_per_epoch=training_steps_per_epoch,
-                             epochs=5,
+                             epochs=10,
                              validation_data=validation_generator,
                              validation_steps=validation_steps_per_epoch,
                              callbacks=[csv_logger, checkpointer])

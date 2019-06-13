@@ -42,7 +42,6 @@ class VideoGenerator:
         if random_start:
             start_frame = random.randint(0,total_frames - num_frames - 1)
             cap.set(1, start_frame)
-            print(total_frames, start_frame)
         
         for _ in range(num_frames):
             ret, frame = cap.read()
