@@ -11,14 +11,16 @@ def videoscan(filename, model_file, sampling_interval):
     model = load_model(model_file) # Loads Keras model/weights for prediction
         
     cap = cv2.VideoCapture(filename)
-    num_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    num_frames = cap.get(cv2.CAP_PROP_FRAME_COUNT)
+    
+    steps_total = int(num_frames // sampling_interval)
     
     frames = []
     probs = []
     
     count = 0
                       
-    for _ in range(num_frames):
+    while True:
         ret, frame = cap.read()
         
         if ret == True:
@@ -35,13 +37,17 @@ def videoscan(filename, model_file, sampling_interval):
             count += 1
             print("Processed {} out of {}".format(count, steps_total))
             example = np.array([frames])
-            example = (output / 255) * 2 - 1
+            example = (example / 255) * 2 - 1
             prob = model.predict(example)
             print('frames collected')
-            print(example.shape)
-            # append probabilities and clear frames buffer
-            probs.append(prob)
-            frames = []
+            print(prob[0])
+            # append probabilities and clear frames buffer by sampling interval
+            probs.append(prob[0])
+            
+            if sampling_interval < 150:
+                frames = frames[sampling_interval:]
+            else:
+                frames = []
                 
     output = np.array(probs)
     return output

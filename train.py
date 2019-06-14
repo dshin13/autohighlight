@@ -10,9 +10,9 @@ from keras.callbacks import ModelCheckpoint
 from keras.callbacks import CSVLogger
 
 # helper code to freeze layers
-def freeze_RGB_model(model, trainable=False):
+def freeze_RGB_model(model, depth=0, trainable=False):
     freeze_layers = model.layers[:-5]
-    for layer in freeze_layers:
+    for layer in freeze_layers[depth:]:
         layer.trainable=trainable
         
 
@@ -22,7 +22,7 @@ if __name__ == '__main__':
     val_dir = './data/val'
     train_dir = './data/train'
     dims = (250,224,224,3)
-    batch_size = 8
+    batch_size = 4
     videogen = VideoGenerator(train_dir, val_dir, dims, batch_size)
     
     # training/testing data generators and hyperparameters
@@ -32,10 +32,10 @@ if __name__ == '__main__':
     validation_steps_per_epoch = len(videogen.filenames_val) // batch_size
     
     # Load model
-    test_model = load_model('./models/test_model.hdf5')
+    test_model = load_model('./weights/0613_run_2/weights.hdf5')
     
     # Freeze I3D model
-    freeze_RGB_model(test_model, trainable=False)
+    freeze_RGB_model(test_model, depth=152, trainable=True)
     
     # Define optimizer
     #opt = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)

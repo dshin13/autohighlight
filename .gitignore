@@ -3,3 +3,5 @@ __pycache__/
 weights/
 logs/
 .ipynb_checkpoints/
+old/
+*.hdf5
