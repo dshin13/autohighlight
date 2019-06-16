@@ -32,14 +32,14 @@ if __name__ == '__main__':
     validation_steps_per_epoch = len(videogen.filenames_val) // batch_size
     
     # Load model
-    test_model = load_model('./weights/0613_run_2/weights.hdf5')
+    test_model = load_model('./weights/0613_run_3_finetune/test_model_trained.hdf5')
     
     # Freeze I3D model
-    freeze_RGB_model(test_model, depth=152, trainable=True)
+    freeze_RGB_model(test_model, depth=132, trainable=True)
     
     # Define optimizer
     #opt = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
-    opt = SGD(lr=0.001, decay=1e-7, momentum=0.9, nesterov=True)
+    opt = SGD(lr=0.0005, decay=1e-7, momentum=0.9, nesterov=True)
     
     # Compile model
     test_model.compile(optimizer=opt,
@@ -59,4 +59,4 @@ if __name__ == '__main__':
                              callbacks=[csv_logger, checkpointer])
    
     # Save final model
-    test_model.save('test_model_trained_hdf5')
+    test_model.save('test_model_trained.hdf5')

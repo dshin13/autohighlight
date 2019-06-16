@@ -20,8 +20,8 @@ class VideoGenerator:
         if self.val_dir:
             self.filenames_val = self.get_filenames(val_dir)
 
-        self.classname_by_id = {i: cls for i, cls in
-                                enumerate({os.path.basename(os.path.dirname(file)) for file in self.filenames_train})}
+        self.classname_by_id = {1: 'goals', 0: 'nongoals'} #{i: cls for i, cls in
+                               # enumerate({os.path.basename(os.path.dirname(file)) for file in self.filenames_train})}
         self.id_by_classname = {cls: i for i, cls in self.classname_by_id.items()}
 
         self.n_classes = len(self.classname_by_id)
