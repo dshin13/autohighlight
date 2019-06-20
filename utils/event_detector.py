@@ -25,8 +25,9 @@ def videoscan(filename, model_file, sampling_interval):
         
         if ret == True:
             # take a center crop of the video frame
-            center_crop = (frame.shape[1] - frame.shape[0])//2
-            frame = frame[:,center_crop:center_crop+frame.shape[0],:]
+            # center_crop = (frame.shape[1] - frame.shape[0])//2
+            # frame = frame[:,center_crop:center_crop+frame.shape[0],:]
+            frame = cv2.resize(frame, (224, 224), interpolation=cv2.INTER_AREA)
             frames.append(frame)
                 
         else:

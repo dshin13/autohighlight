@@ -20,8 +20,8 @@ class VideoGenerator:
         if self.val_dir:
             self.filenames_val = self.get_filenames(val_dir)
 
-        self.classname_by_id = {1: 'goals', 0: 'nongoals'} #{i: cls for i, cls in
-                               # enumerate({os.path.basename(os.path.dirname(file)) for file in self.filenames_train})}
+        self.classname_by_id = {i: cls for i, cls in
+                                enumerate(sorted({os.path.basename(os.path.dirname(file)) for file in self.filenames_train}, reverse=True))}
         self.id_by_classname = {cls: i for i, cls in self.classname_by_id.items()}
 
         self.n_classes = len(self.classname_by_id)
@@ -47,7 +47,7 @@ class VideoGenerator:
             ret, frame = cap.read()
             
             if ret == True:
-                frame = cv2.resize(frame, (self.width,self.height), interpolation=cv2.INTER_AREA)
+                #frame = cv2.resize(frame, (self.width,self.height), interpolation=cv2.INTER_AREA)
                 frames.append(frame)
                 
             else:
@@ -73,7 +73,7 @@ class VideoGenerator:
 
         while True:
             filenames = self.get_filenames(dir)
-            if self.shuffle:
+            if self.shuffle and train_or_val == 'train': #switch off shuffle flag if run on validation set
                 random.shuffle(filenames)
 
             n_batches = int(len(filenames) / self.batch_size)
