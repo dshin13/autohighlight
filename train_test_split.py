@@ -4,7 +4,24 @@ import os
 
 
 def train_test_split(root='./data', classes=['goals', 'nongoals'], split_ratio=[0.8, 0.1, 0.1]):
-    
+    """Function to create train/val/test split from parsed examples.
+    Expects root directory to contain folders with class labels, each containing examples of
+    corresponding class.
+
+    Folders named 'train', 'val' and 'test' are created in the directory specified by 'root'.
+    Classes will be organized into separate folders under each directory.
+
+    Parameters
+    ----------
+    root : str
+        Name of parent directory in which all examples are contained
+    classes : list
+        A list of strings corresponding to folder names under the parent
+        directory, to be used as class labels
+    split_ratio : list
+        A list of floats, representing the fraction of train, validation
+        and test sets to be split from the source files
+    """
     # make train and test directories
     current_dir = os.listdir(root)
     train_dir = os.path.join(root, 'train')

@@ -1,3 +1,7 @@
+"""Training function for event detector model
+
+"""
+
 # os utility
 import os
 
@@ -14,6 +18,20 @@ from keras.callbacks import CSVLogger
 
 # helper code to freeze layers
 def freeze_RGB_model(model, depth=0, trainable=False):
+    """Freezes or unfreezes layers in Keras model for training
+
+    Parameters
+    ----------
+    model : Keras model object
+        Model whose layers are to be rendered trainable/untrainable
+    depth : int
+        Starting index of layers (from model.layers) to modify
+    trainable : bool
+        If set to True, unfreezes layers to allow weights to be updated
+        during training; otherwise, freezes layers
+
+    """
+
     freeze_layers = model.layers
     for layer in freeze_layers[depth:]:
         layer.trainable=trainable
@@ -34,7 +52,8 @@ if __name__ == '__main__':
         class_weight[id] = len(os.listdir(os.path.join(train_dir, name)))
     train_count = sum(class_weight.values())
 
-    # Class weights to balance contribution to loss fcn
+    # Class weights to adjust class contribution to loss function
+    # Weights are set proportional to inverse frequency
     for c in class_weight:
         class_weight[c] = train_count//class_weight[c]
 

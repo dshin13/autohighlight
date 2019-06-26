@@ -11,10 +11,12 @@ from keras.models import load_model
 from keras.layers import Activation
 from keras.layers import Dropout
 
+import argparse
+
 # Single stream 3D convolution model from pretraind weights (binary classifier trained in 6/14)
 def RGB_model(NUM_FRAMES, FRAME_HEIGHT, FRAME_WIDTH, NUM_CLASSES, dropout_prob):
 
-    rgb_model = load_model('../weights/0614_run_2_finetune/weights.03-0.34.hdf5')
+    rgb_model = load_model('default.hdf5')
 
     x1 = rgb_model.layers[-6].output # extract output of last avg pool layer
     x1 = Dropout(dropout_prob)(x1)
@@ -28,6 +30,20 @@ def RGB_model(NUM_FRAMES, FRAME_HEIGHT, FRAME_WIDTH, NUM_CLASSES, dropout_prob):
     return model
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("NUM_FRAMES",
+                        help="number of frames processed by model during inference")
+    parser.add_argument("FRAME_HEIGHT",
+                        help="height of frames processed by model")
+    parser.add_argument("FRAME_WIDTH",
+                        help=)
+    parser.add_argument("NUM_CLASSES",
+                        help="number of event classes including neg/background")
+    parser.add_argument("")
+    parser.add_argument("-o", "--output", default='test_model.hdf5'
+                        help="file path to save the model as")
+    parser.add_argument
+    args = parser.parse_args()
     
     # Input dimensions and dropout probability
     NUM_FRAMES=150
@@ -37,8 +53,8 @@ if __name__ == '__main__':
     dropout_prob=0.5
     
     # Instantiate model
-    test_model = RGB_model(NUM_FRAMES, FRAME_HEIGHT, FRAME_WIDTH, NUM_CLASSES, dropout_prob)    
+    test_model = RGB_model(NUM_FRAMES, FRAME_HEIGHT, FRAME_WIDTH, NUM_CLASSES, dropout_prob)
     
     # Save the model
-    test_model.save('test_model_4classes.hdf5')
+    test_model.save('test_model.hdf5')
    

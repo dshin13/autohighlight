@@ -2,6 +2,6 @@ data/
 __pycache__/
 weights/
 logs/
-.ipynb_checkpoints/
 old/
-*.hdf5
+figs/
+dev/

@@ -7,8 +7,35 @@ import numpy as np
 # Based on template from https://github.com/jphdotam/keras_generator_example
 
 class VideoGenerator:
+    """ 
+    A class used to generate videos for training, validation and testing in Keras.
+    Implements data augmentation using temporal crop, horizontal flip and spatial crop.
+    ...
+
+    Usage
+    -----
+    
+
+    """
 
     def __init__(self, train_dir, val_dir, dims, batch_size=2, shuffle=True, file_ext=".mkv"):
+        """ 
+        Parameters
+        ----------
+        train_dir : str
+            Directory where training data is stored
+        val_dir : str
+            Directory where validation/test data is stored
+        dims : tuple (int, int, int, int)
+            Dimensions of input data
+        batch_size : int
+            Batch size (number of examples per yield)
+        shuffle : bool
+            If set to true, shuffles data
+        file_ext : str
+            File extension for data (set to .mkv by default)
+        """
+
         self.train_dir = train_dir
         self.val_dir = val_dir
         self.frames, self.width, self.height, self.channels = dims
@@ -29,12 +56,36 @@ class VideoGenerator:
             self.id_by_classname), "Number of unique classes for training set isn't equal to validation set"
 
     def get_filenames(self, dir):
+        """Returns a list of paths for filenames ending with self.file_ext
+
+        Parameters
+        ----------
+        dir : str
+            Parent directory to search for the files
+        """
+
         filenames = glob.glob(os.path.join(dir, f"**/*{self.file_ext}"))
         return filenames
     
     # Extracts frames from clip using OpenCV
-    def vid2npy(self, filename, num_frames=250, random_start=False):
-        
+    def vid2npy(self, filename, num_frames=250, random_start=False, resize=False):
+        """Returns a numpy array of size (num_frames, self.width, self.height, channels)
+
+        Parameters
+        ----------
+        filename : str
+            File path to video
+        num_frames : int
+            Number of frames to be sampled
+            (relevant if temporal augmentation is being performed during training)
+        random_start : bool
+            If True, uses randomized starting frame for temporal augmentation
+
+        Returns
+        -------
+            numpy.array : video file with all pixel values normalized to range [-1,1]
+        """
+
         cap = cv2.VideoCapture(filename)
         frames =[]
         total_frames = cap.get(cv2.CAP_PROP_FRAME_COUNT)
@@ -47,7 +98,8 @@ class VideoGenerator:
             ret, frame = cap.read()
             
             if ret == True:
-                #frame = cv2.resize(frame, (self.width,self.height), interpolation=cv2.INTER_AREA)
+                if resize:
+                    frame = cv2.resize(frame, (self.width,self.height), interpolation=cv2.INTER_AREA)
                 frames.append(frame)
                 
             else:
@@ -63,6 +115,26 @@ class VideoGenerator:
         return output
 
     def generate(self, train_or_val, horizontal_flip=False, random_crop=False, random_start=False):
+        """Generator function
+        Passes parameters to the helper function _generate_data_from_batch_file_names
+
+        Parameters
+        ----------
+
+        train_or_val : str
+            Flag to specify whether generator is for training.
+            'train' enables data shuffling and augmentation, while 'val' disables both.
+        horizontal_flip : bool
+            Flag to enable/disable horizontal flip during augmentation
+        random_crop : bool
+            Flag to enable spatial crop during augmentation
+        random_start : bool
+            Flag to enable temporal crop during augmentation
+
+        Returns
+        -------
+            Generator : yields video frame stack (numpy array) and class labels
+        """
 
         if train_or_val == 'train':
             dir = self.train_dir
@@ -73,7 +145,7 @@ class VideoGenerator:
 
         while True:
             filenames = self.get_filenames(dir)
-            if self.shuffle and train_or_val == 'train': #switch off shuffle flag if run on validation set
+            if self.shuffle and train_or_val == 'train': # shuffle flag when run on training set
                 random.shuffle(filenames)
 
             n_batches = int(len(filenames) / self.batch_size)
@@ -81,14 +153,37 @@ class VideoGenerator:
             for i in range(n_batches):
                 # print(f"Slicing {i*self.batch_size}:{(i+1)*self.batch_size}")
                 filenames_batch = filenames[i * self.batch_size:(i + 1) * self.batch_size]
-                x, y = self.__generate_data_frome_batch_file_names(filenames_batch,
-                                                                   train_or_val,
-                                                                   horizontal_flip,
-                                                                   random_crop,
-                                                                   random_start)
+                x, y = self._generate_data_from_batch_file_names(filenames_batch,
+                                                                 train_or_val,
+                                                                 horizontal_flip,
+                                                                 random_crop,
+                                                                 random_start)
                 yield x, y
 
-    def __generate_data_frome_batch_file_names(self, filenames_batch, train_or_val, horizontal_flip, random_crop, random_start):
+    def _generate_data_from_batch_file_names(self, filenames_batch, train_or_val, horizontal_flip, random_crop, random_start):
+        """Generator helper function
+        Retrieves frame stack from video source and performs data augmentation based on parameters
+        passed from generate function. Returns a single batch of data and labels.
+
+        Parameters
+        ----------
+            filenames_batch : list
+                Contains file paths for video clips in the current batch
+            train_or_val : str
+                Flag to toggle processes useful during training, including shuffling and data augmentation
+            horizontal_flip : bool
+                Toggles data augmentation via horizontal flip
+            random_crop : bool
+                Toggles data augmentation via spatial crop
+            random_start: bool
+                Toggles data augmentation via temporal crop
+
+        Returns
+        -------
+            numpy.array : Array of frame stacks of size (batch size x num_frames x H x W x channels)
+            numpy.array : Array of one-hot encoded class labels (len(integers) x self.n_classes)
+        """
+
         data = []
         labels = []
 
@@ -128,5 +223,17 @@ class VideoGenerator:
 
 
     def list_of_integers_to_2d_onehots(self, integers):
+        """Function to generate one-hot encoding of class labels
+
+        Parameters
+        ----------
+        integers : list
+            List of class labels (e.g. [0, 1, 1, 0, 2, 1, 0, 1, 0])
+
+        Returns
+        -------
+            numpy.array : an array of dimension (len(integers) x self.n_classes)
+        """
+
         array = [[1 if integers[sample] == cls else 0 for cls in range(self.n_classes)] for sample in range(len(integers))]
         return np.array(array)

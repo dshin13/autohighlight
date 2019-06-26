@@ -6,6 +6,15 @@ import matplotlib.pyplot as plt
 
 
 def return_classes_from_pred(y):
+    """Converts a list of batches of class labels into 1D array
+
+    Parameters
+    ----------
+    y : list
+        List of batches of class labels
+        (e.g. [[0,1], [1,0], [1,1], [1,0]] for a batch size of 2)
+    """
+
     y = np.array(y)
     y = y.reshape(-1, y.shape[-1])
     y = np.argmax(y, 1)
@@ -13,6 +22,17 @@ def return_classes_from_pred(y):
 
 
 def evaluate_model(steps, validation_generator, model):
+    """Evaluates model using Keras model.predict method
+
+    Parameters
+    ----------
+    steps : int
+        Number of iterations to run the generator
+    validation_generator : A generator object from VideoGenerator class
+        Generates data for evaluation
+    model : Keras model
+        The model to run inference with
+    """
 
     counter = 0
 
@@ -40,7 +60,7 @@ def plot_confusion_matrix(y_true, y_pred, classes,
                           normalize=False,
                           title=None,
                           cmap=plt.cm.Blues):
-    """
+    """ 
     This function prints and plots the confusion matrix.
     Normalization can be applied by setting `normalize=True`.
     """
@@ -112,4 +132,5 @@ if __name__ == '__main__':
     # Labels
     class_labels = [v for _, v in sorted(videogen.classname_by_id.items(), key=lambda x: x[0])]
 
+    # Generate confusion matrix
     plot_confusion_matrix(y_true, y_pred, class_labels)
