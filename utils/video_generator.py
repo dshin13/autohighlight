@@ -4,7 +4,7 @@ import os
 import cv2
 import numpy as np
 
-# Based on template from https://github.com/jphdotam/keras_generator_example
+# Based on generator template from https://github.com/jphdotam/keras_generator_example
 
 class VideoGenerator:
     """ 
@@ -38,7 +38,7 @@ class VideoGenerator:
 
         self.train_dir = train_dir
         self.val_dir = val_dir
-        self.frames, self.width, self.height, self.channels = dims
+        self.frames, self.height, self.width, self.channels = dims
         self.batch_size = batch_size
         self.shuffle = shuffle
         self.file_ext = file_ext
@@ -188,10 +188,9 @@ class VideoGenerator:
         labels = []
 
         for i, filename in enumerate(filenames_batch):
-            
             # Data augmentation implements horizontal flip and random crop (temporal and spatial)
             if train_or_val == 'train':
-                npy = self.vid2npy(filename, num_frames=150, random_start=random_start)
+                npy = self.vid2npy(filename, num_frames=self.frames, random_start=random_start)
 
                 if horizontal_flip:
                     flip = random.random()
@@ -201,15 +200,15 @@ class VideoGenerator:
                     horizontal_crop = random.randint(0, npy.shape[2] - npy.shape[1])
                     npy = npy[:,:,horizontal_crop:horizontal_crop + npy.shape[1],:]
                     assert npy.shape[1] == npy.shape[2]
-            
+
             # Center crop all validation clips
             elif train_or_val == 'val':
-                npy = self.vid2npy(filename, num_frames=150, random_start=False)
+                npy = self.vid2npy(filename, num_frames=self.frames, random_start=False)
 
                 horizontal_crop = (npy.shape[2] - npy.shape[1])//2
                 npy = npy[:,:,horizontal_crop:horizontal_crop + npy.shape[1],:]
 
-            if len(npy.shape) == 3:  # Add colour channel to B&W images
+            if len(npy.shape) == 3:  # Add color channel to B&W images
                 npy = np.expand_dims(npy, axis=-1)
 
             data.append(npy)

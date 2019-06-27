@@ -10,6 +10,8 @@ from keras.models import Model
 from keras.layers import Activation
 from keras.layers import Dropout
 
+import argparse
+
 # Single stream 3D convolution model in RGB channel using ImageNet/Kinetics weights
 def RGB_model(NUM_FRAMES, FRAME_HEIGHT, FRAME_WIDTH, NUM_CLASSES, dropout_prob):
 
@@ -30,17 +32,34 @@ def RGB_model(NUM_FRAMES, FRAME_HEIGHT, FRAME_WIDTH, NUM_CLASSES, dropout_prob):
     return model
 
 if __name__ == '__main__':
-    
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("NUM_FRAMES", type=int,
+                        help="number of frames processed by model during inference")
+    parser.add_argument("FRAME_HEIGHT", type=int,
+                        help="height of frames processed by model")
+    parser.add_argument("FRAME_WIDTH", type=int,
+                        help="width of frames processed by model")
+    parser.add_argument("NUM_CLASSES", type=int,
+                        help="number of event classes including neg/background")
+    parser.add_argument("-d", "--dropout", type=float, default=0.5,
+                        help="dropout probability for classification layer")
+    parser.add_argument("-o", "--output", type=str, default='test_model.hdf5',
+                        help="file path to save the model")
+    args = parser.parse_args()
+
     # Input dimensions and dropout probability
-    NUM_FRAMES=150
-    FRAME_HEIGHT=224
-    FRAME_WIDTH=224
-    NUM_CLASSES=2
-    dropout_prob=0.5
+    NUM_FRAMES=args.NUM_FRAMES
+    FRAME_HEIGHT=args.FRAME_HEIGHT
+    FRAME_WIDTH=args.FRAME_WIDTH
+    NUM_CLASSES=args.NUM_CLASSES
+    dropout_prob=args.dropout
     
     # Instantiate model
-    test_model = RGB_model(NUM_FRAMES, FRAME_HEIGHT, FRAME_WIDTH, NUM_CLASSES, dropout_prob)    
+    test_model = RGB_model(NUM_FRAMES, FRAME_HEIGHT, FRAME_WIDTH, NUM_CLASSES, dropout_prob)
     
     # Save the model
-    test_model.save('test_model.hdf5')
-   
+    test_model.save(args.output)
+
+    print('Model built for {}-class classification of ({}x{}x{}x3) video clips.'.format(NUM_CLASSES, NUM_FRAMES, FRAME_HEIGHT, FRAME_WIDTH))
+    print('Saved as {}'.format(args.output))

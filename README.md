@@ -47,7 +47,7 @@ $ python videoscan.py -s <parent directory>
 ```
 This will create <filename>_pred.npy for every video file (.mkv) in the same folder as the video.
 
-### Building your own model
+### Building your own model: follow these steps!
 
 To generate class-labeled video clips, use the following command from the home directory:
 ```sh
@@ -60,11 +60,22 @@ Afterwards, generate train/val/test split using the following command:
 $ python train_test_split.py <source directory> <target directory>
 ```
 
-To define a custom RGB-stream I3D classifier, use the following command:
+To define a custom RGB-stream I3D classifier for N classes, use the following command:
 ```sh
-$ python models/build_RGB_model.py <num_frames> <num_width> <num_height> <num_classes>
+$ python models/build_RGB_model.py <num_frames> <num_width> <num_height> N
 ```
 
+The model can be trained by using the following command:
+```sh
+$ python train.py <training set directory> <validation set directory>
+```
+
+Model training parameters and optimizer definitions can be modified as necessary inside train.py.
+
+To use your own model to run an inference on a video file, use the following command:
+```sh
+$ python autohighlight.py -s <videopath> -o <output> -m <your model>
+```
 
 ### Docker
 TBD!
@@ -72,7 +83,6 @@ TBD!
 ### Todos
 
  - Write tests
- - Write docstring
  - Docker image
 
 License

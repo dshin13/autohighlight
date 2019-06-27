@@ -2,8 +2,9 @@
 
 """
 
-# os utility
+# python utility
 import os
+import argparse
 
 # Generator class
 from utils.video_generator import VideoGenerator
@@ -16,8 +17,8 @@ from keras.optimizers import SGD
 from keras.callbacks import ModelCheckpoint
 from keras.callbacks import CSVLogger
 
-# helper code to freeze layers
-def freeze_RGB_model(model, depth=0, trainable=False):
+# helper function to freeze layers
+def freeze_RGB_model(model, depth=152, trainable=False):
     """Freezes or unfreezes layers in Keras model for training
 
     Parameters
@@ -30,20 +31,59 @@ def freeze_RGB_model(model, depth=0, trainable=False):
         If set to True, unfreezes layers to allow weights to be updated
         during training; otherwise, freezes layers
 
+    Notes
+    -----
+    Indices for Inception blocks are as follows:
+
+    End of block 0: layer 31 (0-indexed)
+    End of block 1: layer 51
+    End of block 2: layer 72
+    End of block 3: layer 92
+    End of block 4: layer 112
+    End of block 5: layer 132
+    End of block 6: layer 152
+    End of block 7: layer 173
+    End of block 8: layer 193
     """
 
-    freeze_layers = model.layers
-    for layer in freeze_layers[depth:]:
-        layer.trainable=trainable
-        
+    for i, l in enumerate(model.layers):
+        if i < depth:
+            l.trainable = False
+        else:
+            l.trainable = trainable
 
 if __name__ == '__main__':
-    
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("train_dir", type=str,
+                        help="directory where training set is located")
+    parser.add_argument("val_dir", type=str,
+                        help="directory where validation set is located")
+    parser.add_argument("-b", "--batch_size", type=int, default=6,
+                        help="batch size")
+    parser.add_argument("-i", "--input", type=str, default="test_model.hdf5",
+                        help="file path of serialized model definition and weights")
+    parser.add_argument("-o", "--output", type=str, default='test_model_trained.hdf5',
+                        help="file path to save the trained model as")
+    parser.add_argument("-e", "--epochs", type=int, default=10,
+                        help="number of epochs")
+    args = parser.parse_args()
+
+
     # Directories where training and test sets reside
-    val_dir = './data/split_clips/val'
-    train_dir = './data/split_clips/train'
-    dims = (150,224,224,3)
-    batch_size = 6
+    train_dir = args.train_dir
+    val_dir = args.val_dir
+
+    # load model
+    test_model = load_model(args.input)
+
+    # extract input dimensions
+    _, num_frames, num_height, num_width, num_channels = test_model.input.shape
+    dims = (int(num_frames), int(num_height), int(num_width), int(num_channels))
+
+    # batch size
+    batch_size = args.batch_size
+
     videogen = VideoGenerator(train_dir, val_dir, dims, batch_size)
     classes = videogen.classname_by_id
 
@@ -64,12 +104,15 @@ if __name__ == '__main__':
     training_steps_per_epoch = len(videogen.filenames_train) // batch_size
     validation_generator = videogen.generate(train_or_val="val")
     validation_steps_per_epoch = len(videogen.filenames_val) // batch_size
-    
-    # Load model
-    test_model = load_model('./weights/0618_finetune/weights.08-0.64.hdf5')
+
+    # Stop process if model size does not match number of classes
+    n_classes = len(classes)
+    model_n_classes = int(test_model.output.shape[1])
+
+    if model_n_classes != n_classes:
+        raise Exception('Classes in training set : {}, expected : {}'.format(n_classes, model_n_classes))
     
     # Freeze I3D model (unfreeze last 2 layers only)
-    # freeze_RGB_model(test_model, depth=132, trainable=False)
     freeze_RGB_model(test_model, depth=152, trainable=True)
     
     # Define optimizer
