@@ -9,7 +9,7 @@ import numpy as np
 from keras.models import load_model
 
 
-def videoscan(filename, model_file, sampling_interval, resize=True):
+def videoscan(filename, model_file, sampling_interval, resize=True, verbose=False):
     """Scans video files and performs inference using the provided model
 
     Approach
@@ -32,8 +32,10 @@ def videoscan(filename, model_file, sampling_interval, resize=True):
         A serialized file containing Keras model definition and weights
     sampling_interval : int
         Number of frames to shift after each inference
-    resize : bool
+    resize : bool (default = True)
         Toggles resize (set to False if spatial cropping has been used)
+    verbose : bool (default = False)
+        Flag to indicate whether to print progress
 
     Returns
     -------
@@ -55,7 +57,7 @@ def videoscan(filename, model_file, sampling_interval, resize=True):
     probs = []
     
     count = 0
-                      
+
     while True:
         ret, frame = cap.read()
         
@@ -75,7 +77,8 @@ def videoscan(filename, model_file, sampling_interval, resize=True):
         
         if len(frames) == input_frames: #replace with dimension 1 of model input
             count += 1
-            print("Processed {} out of {}".format(count, steps_total))
+            if verbose:
+                print("Processed {} out of {}".format(count, steps_total))
             example = np.array([frames])
             example = (example / 255) * 2 - 1
             prob = model.predict(example)
@@ -90,5 +93,3 @@ def videoscan(filename, model_file, sampling_interval, resize=True):
                 
     output = np.array(probs)
     return output
-    
-    

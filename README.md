@@ -14,7 +14,8 @@ AutoHighlight is an automatic video summarizer utilizing action recognition via 
 
 ## Dependencies
 
-AutoHighlight is developed in Python 3.6.5 and uses a number of open source packages:
+AutoHighlight was developed in Python 3.6.5 on AWS Deep Learning AMI (Ubuntu) Version 23.0.
+It uses the following open source packages:
 
 * [Keras] - 2.2.4
 * [Tensorflow] - 1.13.1
@@ -38,10 +39,17 @@ $ git clone https://github.com/dshin13/autohighlight.git
 To run an inference on a video file, navigate to AutoHighlight directory and use the following command:
 
 ```sh
-$ python autohighlight.py -s <videopath> -o <output>
+$ python autohighlight.py <videopath> <output>
+```
+
+To create videos from pre-existing annotation files, use the following command:
+
+```sh
+$ python autohighlight.py <videopath> <output> -a <annotation path>
 ```
 
 If you have video files to annotate, use the following command:
+
 ```sh
 $ python videoscan.py -s <parent directory>
 ```
@@ -80,6 +88,11 @@ $ python autohighlight.py -s <videopath> -o <output> -m <your model>
 ### Docker
 TBD!
 
+To use a pre-built Docker image for summarizing a soccer match, do the following:
+```sh
+$ docker run -v $(pwd):/data <imagename> python autohighlight.py <videopath>
+```
+
 ### Todos
 
  - Write tests
@@ -87,8 +100,9 @@ TBD!
 
 License
 ----
+Code and contents of this repository are released under MIT License.
 
-MIT
+Kinetics-pretrained weights were released by DeepMind under Apache 2.0 License.
 
    [git-repo-url]: <https://github.com/dshin13/autohighlight.git>
    [SoccerNet-paper]: <https://arxiv.org/abs/1804.04527>

@@ -66,7 +66,7 @@ def match_frames_and_dims(input, template, overlay=False, alpha=0.5):
     Parameters
     ----------
     input : numpy.array
-        Input video 
+        Input video
     template : numpy.array
         Template video - provides target frame count and dimensions
     overlay : bool
@@ -97,18 +97,18 @@ def match_frames_and_dims(input, template, overlay=False, alpha=0.5):
         template = (template - template.min()) / (template.max() - template.min())
         template = template.astype('float32')
     
-    # Step 1: match number of frames by duplicating channels until filled    
+    # Step 1: match number of frames by duplicating channels until filled
     num_duplicates = round(num_frames / input_frames)
     output = np.repeat(input, num_duplicates, axis=0) # fill duplicate frames
     print(output.shape)
 
     # if using 1-dimensional data, copy contents into missing channels
     if len(input.shape) == 3:
-        output = np.stack([output, output, output], axis=-1)    
+        output = np.stack([output, output, output], axis=-1)
     
     # Step 2: resize each frame to match template dimensions
     output = [output[n] for n in range(num_frames)] # truncate excess frames to match frame count
-    for n in range(num_frames): 
+    for n in range(num_frames):
         output[n] = cv2.resize(output[n], (w, h))
         
         if overlay:

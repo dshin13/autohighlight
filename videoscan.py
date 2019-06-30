@@ -1,6 +1,6 @@
 from utils.event_detector import videoscan
 from utils.clip_parser import scan_directories
-from utils.timer import print_time
+from utils.timer import PrintTime
 
 import numpy as np
 
@@ -64,14 +64,11 @@ if __name__ == '__main__':
     if not dirs:
         raise Exception("Root directory does not contain valid files.")
 
-    if not args.model:
-        print("Model file not specified - using default model in ./models/default.hdf5")
-
     model_dir = args.model
 
     sampling_rate = args.rate
 
-    printer = print_time()
+    printer = PrintTime()
     printer.reset()
 
     for dir in dirs:
@@ -82,7 +79,7 @@ if __name__ == '__main__':
         for v in vid_files:
             vid_path = os.path.join(dir, v)
             np_path = vid_path + '_pred.npy'
-            out =  videoscan(vid_path, model_dir, sampling_rate)
+            out = videoscan(vid_path, model_dir, sampling_rate)
             np.save(np_path, out)
             print('Saved to path: ' + np_path)
             printer.time()

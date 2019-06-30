@@ -1,9 +1,9 @@
 import random
 import shutil
 import os
+import argparse
 
-
-def train_test_split(root='./data', classes=['goals', 'nongoals'], split_ratio=[0.8, 0.1, 0.1]):
+def train_test_split(src, dest, classes=None, split_ratio=[0.8, 0.1, 0.1]):
     """Function to create train/val/test split from parsed examples.
     Expects root directory to contain folders with class labels, each containing examples of
     corresponding class.
@@ -13,8 +13,10 @@ def train_test_split(root='./data', classes=['goals', 'nongoals'], split_ratio=[
 
     Parameters
     ----------
-    root : str
+    src : str
         Name of parent directory in which all examples are contained
+    dest : str
+        Name of directory to which train/val/test sets will be saved
     classes : list
         A list of strings corresponding to folder names under the parent
         directory, to be used as class labels
@@ -22,27 +24,27 @@ def train_test_split(root='./data', classes=['goals', 'nongoals'], split_ratio=[
         A list of floats, representing the fraction of train, validation
         and test sets to be split from the source files
     """
-    # make train and test directories
-    current_dir = os.listdir(root)
-    train_dir = os.path.join(root, 'train')
-    val_dir = os.path.join(root, 'val')
-    test_dir = os.path.join(root, 'test')    
-    
-    if 'train' not in current_dir:
+
+    # if no classes specified, infer classes from all folders in source directory
+    if not classes:
+         classes = os.listdir(src)
+
+    # make directories
+    train_dir = os.path.join(dest, 'train')
+    val_dir = os.path.join(dest, 'val')
+    test_dir = os.path.join(dest, 'test')
+
+    if not os.path.exists(train_dir):
         os.mkdir(train_dir)
 
-    if 'val' not in current_dir:
-        os.mkdir(val_dir)        
-        
-    if 'test' not in current_dir:
+    if not os.path.exists(val_dir):
+        os.mkdir(val_dir)
+
+    if not os.path.exists(test_dir):
         os.mkdir(test_dir)
-    
-    train_dir_content = os.listdir(train_dir)
-    val_dir_content = os.listdir(val_dir)
-    test_dir_content = os.listdir(test_dir)
-    
+
     for cls in classes:
-        cls_dir = os.path.join(root, cls)
+        cls_dir = os.path.join(src, cls)
         print('Accessing files in ' + cls_dir)
         cls_list = os.listdir(cls_dir)
         assert len(cls_list) > 0
@@ -75,15 +77,35 @@ def train_test_split(root='./data', classes=['goals', 'nongoals'], split_ratio=[
             shutil.copy2(os.path.join(cls_dir, dir), cls_train_dir)
 
         for dir in cls_val_set:
-            shutil.copy2(os.path.join(cls_dir, dir), cls_val_dir)            
+            shutil.copy2(os.path.join(cls_dir, dir), cls_val_dir)
             
         for dir in cls_test_set:
             shutil.copy2(os.path.join(cls_dir, dir), cls_test_dir)
             
 if __name__ == "__main__":
-    train_test_split(root='./data/split_clips',
-                 classes=['goals', 'cards', 'subs', 'bg'],
-                 split_ratio = [0.85, 0.1, 0.05]
+    parser = argparse.ArgumentParser()
+    parser.add_argument("source_dir",
+                        help="source directory for video clips")
+    parser.add_argument("output_dir",
+                        help="output directory for split files")
+    parser.add_argument("-c" "--classes",
+                        help="classes for extraction")
+    parser.add_argument("-r", "--ratio", default='0.85,0.1,0.05',
+                        help="dataset split ratio")
+    args = parser.parse_args()
+
+    source_dir = args.source_dir
+    output_dir = args.output_dir
+
+    classes = args.classes.split(',')
+    split_ratio = args.ratio.split(',')
+
+    # classes = ['goals', 'cards', 'subs', 'bg']
+    # split_ratio = [0.85, 0.1, 0.05]
+
+    train_test_split(root=source_dir,
+                 classes=classes,
+                 split_ratio=split_ratio
                 )
     
     print('Done')

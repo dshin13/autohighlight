@@ -1,6 +1,6 @@
 from timeit import default_timer as timer
 
-class print_time():
+class PrintTime():
     """A class used to count time in methods
     Usage
     -----

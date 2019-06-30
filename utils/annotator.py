@@ -5,11 +5,10 @@ import numpy as np
 import os
 
 class Annotator:
-"""A class to annotate videos using event inference output from videoscan function
+    """A class to annotate videos using event inference output from videoscan function
+    """
 
-"""
-
-    def __init__(self, npy, classes_lst, thresh):
+    def __init__(self, npy, classes_lst, thresh, rate=75):
         """ 
         Parameters
         ----------
@@ -25,13 +24,32 @@ class Annotator:
             e.g. [0.9,0.95] selects only timestamps which have class
             probability of 0.9 or greater for class 1, and 0.95 or greater
             for class 2
+        rate : int
+            Sampling rate of inference, in number of frames
         """
 
         self.classes_lst = classes_lst
         self.thresh = thresh
         self.npy = npy
+        self.rate = rate
+        self.fps = 25.0
         self.events_sec = []
-    
+
+    def get_fps(self, source):
+        """Function to extract frames per second from source video
+
+        Parameters
+        ----------
+        source : str
+            Path name of source video file
+        """
+
+        import cv2
+        cap = cv2.VideoCapture(source)
+        self.fps = cap.get(cv2.CAP_PROP_FPS)
+        print("Source FPS : {}".format(self.fps))
+
+
     # Helper function for timestamp extraction
     def _extractor(self, vector, cls, npy):
         """Helper function for timestamp extraction from a specified class
@@ -55,10 +73,10 @@ class Annotator:
         
         for i in range(vector.shape[0]):
             if vector[i]:
-                sec = i / 25 * 75 + 3
+                sec = i / self.fps * self.rate + 3
                 prob = float(npy[i, cls])
-                timestamp.append([sec, cls,  prob])
-        
+                timestamp.append([sec, cls, prob])
+
         return len(timestamp), timestamp
 
     # timestamp extractor (updates events_sec which contains timestamp of events for editing)
@@ -163,5 +181,5 @@ class Annotator:
             summary_list.append(sub)
 
         summary = concatenate_videoclips(summary_list)
-        summary.write_videofile(output_path,codec='libx264',logger=None)
+        summary.write_videofile(output_path, codec='libx264', verbose=None)
         print('Summary saved to ' + output_path)
