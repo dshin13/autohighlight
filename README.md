@@ -86,17 +86,17 @@ $ python autohighlight.py -s <videopath> -o <output> -m <your model>
 ```
 
 ### Docker
-TBD!
+You need to have nvidia-docker installed to run the Docker image.
 
 To use a pre-built Docker image for summarizing a soccer match, do the following:
 ```sh
-$ docker run -v $(pwd):/data <imagename> python autohighlight.py <videopath>
+$ docker --runtime=nvidia run -v $(pwd):/data autohighlight python autohighlight.py /data/<videofile> /data/summary.mp4
 ```
 
 ### Todos
 
  - Write tests
- - Docker image
+ - Fix Docker image
 
 License
 ----

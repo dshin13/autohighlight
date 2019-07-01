@@ -22,7 +22,7 @@ from keras.layers import Input
 from keras.layers import BatchNormalization
 from keras.layers import Conv3D
 from keras.layers import MaxPooling3D
-from keras.layers import AveragePooling3D
+from keras.layers import AveragePooling2D
 from keras.layers import Dropout
 from keras.layers import Reshape
 from keras.layers import Lambda

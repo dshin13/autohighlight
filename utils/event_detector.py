@@ -58,6 +58,8 @@ def videoscan(filename, model_file, sampling_interval, resize=True, verbose=Fals
     
     count = 0
 
+    print("Starting scan...")
+
     while True:
         ret, frame = cap.read()
         
@@ -90,6 +92,7 @@ def videoscan(filename, model_file, sampling_interval, resize=True, verbose=Fals
                 frames = frames[sampling_interval:]
             else:
                 frames = []
-                
+
+    print("Scan completed.")
     output = np.array(probs)
     return output

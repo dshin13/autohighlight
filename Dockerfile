@@ -1,5 +1,5 @@
 # Base image
-FROM python:3.6
+FROM tensorflow/tensorflow:1.13.1-gpu-py3
 
 # specify working directory
 WORKDIR /usr/src/autohighlight
@@ -11,7 +11,7 @@ COPY . /usr/src/autohighlight
 RUN pip install -r requirements.txt
 
 # specify mount point
-VOLUME /data
+VOLUME /data/
 
 
 # Environmental variables
