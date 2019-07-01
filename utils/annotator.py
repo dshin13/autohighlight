@@ -1,6 +1,5 @@
 ## Annotator class: extracts annotation from inference data and has a video summarizer method
 
-import pandas as pd
 import numpy as np
 import os
 
@@ -33,6 +32,7 @@ class Annotator:
         self.npy = npy
         self.rate = rate
         self.fps = 25.0
+        self.input_offset = 3 # input offset in seconds (50% of model input)
         self.events_sec = []
 
     def get_fps(self, source):
@@ -47,6 +47,7 @@ class Annotator:
         import cv2
         cap = cv2.VideoCapture(source)
         self.fps = cap.get(cv2.CAP_PROP_FPS)
+        self.input_offset = 75 / self.fps
         print("Source FPS : {}".format(self.fps))
 
 
@@ -73,7 +74,7 @@ class Annotator:
         
         for i in range(vector.shape[0]):
             if vector[i]:
-                sec = i / self.fps * self.rate + 3
+                sec = i / self.fps * self.rate + self.input_offset
                 prob = float(npy[i, cls])
                 timestamp.append([sec, cls, prob])
 

@@ -2,6 +2,7 @@ from utils.annotator import Annotator
 from utils.event_detector import videoscan
 
 import argparse
+import os
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -46,7 +47,7 @@ if __name__ == '__main__':
     # generate a summary video
     output_folder = os.path.dirname(output_path)
 
-    if not os.path.exists(output_folder):
+    if not os.path.exists(output_folder) and output_folder:
         os.mkdir(output_folder)
         print("Made directory : " + output_folder)
 

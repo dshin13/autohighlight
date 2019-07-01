@@ -1,0 +1,14 @@
+Welcome to AutoHighlight!
+
+Usage
+-----
+
+To summarize a soccer video, use the following command:
+
+   $ docker run -v <videopath>:/usr/src/autohighlight python autohighlight.py <source_name> <output_name>
+
+To split data for model training, use the following:
+
+   $ docker run -v <filepath>:/data bash create_dataset.sh
+
+-----
