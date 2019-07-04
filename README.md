@@ -7,7 +7,7 @@ AutoHighlight is an automatic video summarizer utilizing action recognition via 
   - AutoHighlight utilizes Inflated 3D Convolution architecture from [DeepMind](I3D) to classify video snippets (architecture obtained from [this Keras implementation](I3D_keras)).
   - The example weight included in the repo is trained on association football (soccer) matches using the [SoccerNet dataset](SoccerNet-paper) (GitHub repo [here](SoccerNet)).
 
-# Features
+## Features
 
   - Train your own AI video summarizer using your own dataset!
   - Includes a pre-trained network that you can use for summarizing soccer matches!
@@ -26,7 +26,7 @@ It uses the following open source packages:
 AutoHighlight is open source with a [public repository](git-repo-url)
  on GitHub.
 
-### Installation and usage
+## Installation and usage
 
 AutoHighlight requires Python 3 to run.
 
@@ -35,6 +35,8 @@ Install the dependencies and clone AutoHighlight from GitHub repo.
 ```sh
 $ git clone https://github.com/dshin13/autohighlight.git
 ```
+
+### Making inference on soccer videos
 
 To run an inference on a video file, navigate to AutoHighlight directory and use the following command:
 
@@ -53,27 +55,45 @@ If you have video files to annotate, use the following command:
 ```sh
 $ python videoscan.py -s <parent directory>
 ```
+
 This will create <filename>_pred.npy for every video file (.mkv) in the same folder as the video.
+
+
+### Using model visualizer tool for I3D activation
+
+To create overlay video clips showing activations from specific I3D blocks, use the following command:
+
+```sh
+$ python activation_visualizer.py <videopath> -b <block index to probe (0-8)> 
+```
+
+This will create a file named overlay.mp4 in your current working directory.
+
 
 ### Building your own model: follow these steps!
 
 To generate class-labeled video clips, use the following command from the home directory:
+
 ```sh
 $ python utils/clip_parser.py <source directory> <target directory>
 ```
+
 Please refer to clip_parser.py docstring to define an appropriate filter function first.
 
 Afterwards, generate train/val/test split using the following command:
+
 ```sh
 $ python train_test_split.py <source directory> <target directory>
 ```
 
 To define a custom RGB-stream I3D classifier for N classes, use the following command:
+
 ```sh
 $ python models/build_RGB_model.py <num_frames> <num_width> <num_height> N
 ```
 
 The model can be trained by using the following command:
+
 ```sh
 $ python train.py <training set directory> <validation set directory>
 ```
@@ -81,6 +101,7 @@ $ python train.py <training set directory> <validation set directory>
 Model training parameters and optimizer definitions can be modified as necessary inside train.py.
 
 To use your own model to run an inference on a video file, use the following command:
+
 ```sh
 $ python autohighlight.py -s <videopath> -o <output> -m <your model>
 ```

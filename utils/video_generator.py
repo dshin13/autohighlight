@@ -68,7 +68,7 @@ class VideoGenerator:
         return filenames
     
     # Extracts frames from clip using OpenCV
-    def vid2npy(self, filename, num_frames=250, random_start=False, resize=False):
+    def vid2npy(self, filename, num_frames=250, random_start=False, resize=True):
         """Returns a numpy array of size (num_frames, self.width, self.height, channels)
 
         Parameters
@@ -80,6 +80,8 @@ class VideoGenerator:
             (relevant if temporal augmentation is being performed during training)
         random_start : bool
             If True, uses randomized starting frame for temporal augmentation
+        resize : bool
+            If True, resizes frames to match input height and width
 
         Returns
         -------
@@ -201,7 +203,7 @@ class VideoGenerator:
                     npy = npy[:,:,horizontal_crop:horizontal_crop + npy.shape[1],:]
                     assert npy.shape[1] == npy.shape[2]
 
-            # Center crop all validation clips
+            # Switch off shuffle and apply center crop to all validation clips (if applicable)
             elif train_or_val == 'val':
                 npy = self.vid2npy(filename, num_frames=self.frames, random_start=False)
 
