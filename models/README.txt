@@ -4,6 +4,7 @@ i3d_inception.py : I3D network definition from I3D-keras repository
                    (https://github.com/dlpbc/keras-kinetics-i3d)
                    Includes a custom function generate_logit to define
                    a softmax output for user-defined number of classes.
+
 build_rgb_model.py : Contains function to create new model definitions
                      using the I3D backbone and pre-trained weights from
                      the Kinetics dataset.

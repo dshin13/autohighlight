@@ -1,6 +1,7 @@
 This folder contains various utility functions supporting this framework.
 
 annotator.py : contains the Annotator class, used for generating timestamps from inferences.
+
 event_detector.py: contains videoscan function, which generates inferences from videos.
 
 video_generator.py : contains the VideoGenerator class, used as a file generator

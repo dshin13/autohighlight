@@ -1,3 +1,40 @@
+"""Parser script for generating labeled clips
+Creates a directory in the following manner:
+
+   output_dir/class1
+             /class2
+             /class3
+             etc...
+
+Videos and labels in folders should be arranged in the following manner:
+
+   source_dir/some/folder/video1.mkv
+                         /video2.mkv
+                         /Labels.json
+
+Labels.json has the following structure:
+
+   {
+      "annotations": [
+                         {
+                             "gameTime" : "video1 - MM:SS",
+                             "label"    : "class1"
+                         },
+
+                         {
+                             "gameTime" : "video2 - MM:SS",
+                             "label"    : "class2"
+                         }
+
+                     ]
+   }
+
+generate_clips function implements a sampling method which extracts a
+counterexample 45 seconds prior to a labeled timestamp, provided
+there is no overlap with another labeled timestamp.
+
+"""
+
 from moviepy.editor import *
 
 import os

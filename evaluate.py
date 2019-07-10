@@ -107,7 +107,7 @@ def plot_confusion_matrix(y_true, y_pred, classes,
                     color="white" if cm[i, j] > thresh else "black")
     fig.tight_layout()
 
-    plt.savefig('./figs/confusion_0619_test.png')
+    plt.savefig('./confusion_test.png')
     return ax
 
 
@@ -124,7 +124,7 @@ if __name__ == '__main__':
     steps = len(videogen.filenames_val) // batch_size
 
     # Load model
-    model = load_model('./weights/0619_finetune/test_model_trained.hdf5')
+    model = load_model('./models/default.hdf5')
 
     # Generate prediction
     y_true, y_pred = evaluate_model(steps, validation_generator, model)

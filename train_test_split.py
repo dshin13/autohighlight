@@ -1,3 +1,31 @@
+"""Train-test partition script
+
+Expects source directory of the following structure:
+(output of utils/clip_parser.py)
+
+   source_dir/class1
+             /class2
+             /class3
+             etc...
+
+Output directory is structured as follows:
+
+   output_dir/train/class1
+                   /class2
+                   /class3
+
+             /val/class1
+                 /class2
+                 /class3
+
+             /test/class1
+                  /class2
+                  /class3
+
+Split is stratified by default.
+
+"""
+
 import random
 import shutil
 import os
