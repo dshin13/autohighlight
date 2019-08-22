@@ -129,3 +129,4 @@ Kinetics-pretrained weights were released by DeepMind under Apache 2.0 License.
    [numpy]: <https://www.numpy.org/>   
    [moviepy]: <https://zulko.github.io/moviepy/>   
    [imageio]: <https://imageio.github.io/>
+   [Scikit-learn]: <https://scikit-learn.org/stable/>
