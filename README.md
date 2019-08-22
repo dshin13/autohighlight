@@ -22,6 +22,8 @@ It uses the following open source packages:
 * [OpenCV] - 3.4.2
 * [Numpy] - 1.15.4
 * [MoviePy] - 0.2.3.5
+* [imageio] - 2.5.0
+* [Scikit-learn] (for evaluation only) - 
 
 AutoHighlight is open source with a [public repository](git-repo-url)
  on GitHub.
@@ -41,22 +43,22 @@ $ git clone https://github.com/dshin13/autohighlight.git
 To run an inference on a video file, navigate to AutoHighlight directory and use the following command:
 
 ```sh
-$ python autohighlight.py <videopath> <output>
+$ python autohighlight.py <videopath> <output>.mp4
 ```
 
 To create videos from pre-existing annotation files, use the following command:
 
 ```sh
-$ python autohighlight.py <videopath> <output> -a <annotation path>
+$ python autohighlight.py <videopath> <output>.mp4 -a <annotation path>
 ```
 
 If you have video files to annotate, use the following command:
 
 ```sh
-$ python videoscan.py -s <parent directory>
+$ python videoscan.py <parent directory>
 ```
 
-This will create <filename>_pred.npy for every video file (.mkv) in the same folder as the video.
+This will create filename_pred.npy for every video file (.mkv) in the same folder as the video.
 
 
 ### Using model visualizer tool for I3D activation
@@ -106,18 +108,9 @@ To use your own model to run an inference on a video file, use the following com
 $ python autohighlight.py -s <videopath> -o <output> -m <your model>
 ```
 
-### Docker
-You need to have nvidia-docker installed to run the Docker image.
-
-To use a pre-built Docker image for summarizing a soccer match, do the following:
-```sh
-$ docker --runtime=nvidia run -v $(pwd):/data autohighlight python autohighlight.py /data/<videofile> /data/summary.mp4
-```
-
-### Todos
+### Todo
 
  - Write tests
- - Fix Docker image
 
 License
 ----
@@ -135,3 +128,4 @@ Kinetics-pretrained weights were released by DeepMind under Apache 2.0 License.
    [opencv]: <https://opencv.org/>
    [numpy]: <https://www.numpy.org/>   
    [moviepy]: <https://zulko.github.io/moviepy/>   
+   [imageio]: <https://imageio.github.io/>

@@ -2,4 +2,5 @@ Keras==2.2.4
 opencv-python-headless==3.4.2.*
 moviepy==0.2.3.5
 h5py
-#tensorflow-gpu==1.13.1
+imageio==2.5.0
+tensorflow-gpu==1.13.1

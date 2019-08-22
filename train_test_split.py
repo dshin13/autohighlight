@@ -63,12 +63,15 @@ def train_test_split(src, dest, classes=None, split_ratio=[0.8, 0.1, 0.1]):
     test_dir = os.path.join(dest, 'test')
 
     if not os.path.exists(train_dir):
+        print('Creating directory: ' + train_dir)
         os.mkdir(train_dir)
 
     if not os.path.exists(val_dir):
+        print('Creating directory: ' + val_dir)
         os.mkdir(val_dir)
 
     if not os.path.exists(test_dir):
+        print('Creating directory: ' + test_dir)
         os.mkdir(test_dir)
 
     for cls in classes:
@@ -88,13 +91,16 @@ def train_test_split(src, dest, classes=None, split_ratio=[0.8, 0.1, 0.1]):
         cls_val_dir = os.path.join(val_dir, cls)
         cls_test_dir = os.path.join(test_dir, cls)
         
-        if cls not in train_dir_content:
+        if not os.path.exists(cls_train_dir):
+            print('Creating directory: ' + cls_train_dir)
             os.mkdir(cls_train_dir)
 
-        if cls not in val_dir_content:
-            os.mkdir(cls_val_dir)            
-            
-        if cls not in test_dir_content:
+        if not os.path.exists(cls_val_dir):
+            print('Creating directory: ' + cls_val_dir)
+            os.mkdir(cls_val_dir)
+
+        if not os.path.exists(cls_test_dir):
+            print('Creating directory: ' + cls_test_dir)
             os.mkdir(cls_test_dir)
         
         cls_train_set = cls_list[:split_train]
@@ -125,13 +131,21 @@ if __name__ == "__main__":
     source_dir = args.source_dir
     output_dir = args.output_dir
 
-    classes = args.classes.split(',')
-    split_ratio = args.ratio.split(',')
+    if not os.path.exists(output_dir):
+        print('Creating directory: ' + output_dir)
+        os.mkdir(output_dir)
+
+    if 'classes' in args.__dict__.keys():
+        classes = args.classes.split(',')
+    else:
+        classes = None
+    split_ratio = list(map(float, args.ratio.split(',')))
 
     # classes = ['goals', 'cards', 'subs', 'bg']
     # split_ratio = [0.85, 0.1, 0.05]
 
-    train_test_split(root=source_dir,
+    train_test_split(src=source_dir,
+                 dest=output_dir,
                  classes=classes,
                  split_ratio=split_ratio
                 )

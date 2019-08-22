@@ -177,9 +177,11 @@ class Annotator:
             else:
                 start = max(i - 5, 0)
 
-            end = i + 5
-            sub = source.subclip(start,end)
-            summary_list.append(sub)
+            end = min(i + 5, source.end)
+
+            if start != end:
+                sub = source.subclip(start,end)
+                summary_list.append(sub)
 
         summary = concatenate_videoclips(summary_list)
         summary.write_videofile(output_path, codec='libx264', verbose=None)

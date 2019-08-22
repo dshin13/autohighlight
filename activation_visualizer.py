@@ -15,7 +15,6 @@ For other optional arguments, run:
 $ python visualize_activation.py -h
 """
 
-from evaluate import return_classes_from_pred, evaluate_model
 from utils.video_generator import VideoGenerator
 from utils.video_writer import *
 

@@ -1,7 +1,45 @@
+"""Parser script for generating labeled clips
+Creates a directory in the following manner:
+
+   output_dir/class1
+             /class2
+             /class3
+             etc...
+
+Videos and labels in folders should be arranged in the following manner:
+
+   source_dir/some/folder/video1.mkv
+                         /video2.mkv
+                         /Labels.json
+
+Labels.json has the following structure:
+
+   {
+      "annotations": [
+                         {
+                             "gameTime" : "video1 - MM:SS",
+                             "label"    : "class1"
+                         },
+
+                         {
+                             "gameTime" : "video2 - MM:SS",
+                             "label"    : "class2"
+                         }
+
+                     ]
+   }
+
+generate_clips function implements a sampling method which extracts a
+counterexample 45 seconds prior to a labeled timestamp, provided
+there is no overlap with another labeled timestamp.
+
+"""
+
 from moviepy.editor import *
 
 import os
 import json
+import argparse
 
 # Code assumes that each valid directory contains two video files and a label file
 
@@ -25,7 +63,6 @@ def scan_directories(data_dir, file_filter):
     root = os.walk(data_dir)
 
     print('Scanning for files...')
-
     output = []
 
     for directory in root:
@@ -157,7 +194,7 @@ def event_overlap(labels, half, timestamp, window):
                 return True
     return False
     
-def generate_clips(input_dir, output_dir, duration=20):
+def generate_clips(input_dir, output_dir, duration=20, ext='.mkv'):
     """Function to generate example clips from full-length source and labels
     Creates subdirectories and generates examples of each class using index-based
     naming system. Each class is indexed separately.
@@ -200,11 +237,11 @@ def generate_clips(input_dir, output_dir, duration=20):
             for timestamp, label in labels:
                 half = timestamp[0]
                 time = timestamp[1]
-                vid_name = os.path.join(path, half + '.mkv')
-                
+                vid_name = os.path.join(path, half + ext)
+
                 if time - 5 > 0:
-                
-                    if label == 'soccer-ball':                    
+
+                    if label == 'soccer-ball':
                         # collect an instance of a goal
                         clip_video(vid_name, time - 5, duration, i[0], output_dirs[0])
                         i[0] += 1
@@ -233,16 +270,24 @@ def generate_clips(input_dir, output_dir, duration=20):
                             clip_video(vid_name, time - 45, duration, i[1], output_dirs[1])
                             i[1] += 1
 
-
-                    
             print('Saved clip from ' + path)
             
             
 if __name__ == '__main__':
-    
-    output_dir = './data/split_clips'
-    directories = scan_directories('./data', default_filter)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("source_dir", type=str,
+                        help="source directory for videos and labels")
+    parser.add_argument("output_dir", type=str,
+                        help="output directory for labeled video clips")
+    args = parser.parse_args()
+
+    source_dir = args.source_dir
+    output_dir = args.output_dir
+
+    directories = scan_directories(source_dir, default_filter)
+
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
         print('Made directory ' + output_dir)
+
     generate_clips(directories, output_dir, 10)
