@@ -1,7 +1,5 @@
 # AutoHighlight
 
-[![Build Status](https://api.travis-ci.org/dshin13/autohighlight.svg?branch=master)](https://travis-ci.org/dshin13/autohighlight)
-
 AutoHighlight is an automatic video summarizer utilizing action recognition via 3D convolutional neural networks.
 
   - AutoHighlight utilizes Inflated 3D Convolution architecture from [DeepMind](I3D) to classify video snippets (architecture obtained from [this Keras implementation](I3D_keras)).
