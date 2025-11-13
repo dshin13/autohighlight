@@ -1,0 +1,7 @@
+# FastAPI integration dependencies
+# Add these to BallQ_beta's requirements.txt
+
+fastapi>=0.100.0
+pydantic>=2.0
+python-multipart>=0.0.6
+uvicorn>=0.23.0  # For development testing

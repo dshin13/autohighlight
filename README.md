@@ -5,6 +5,12 @@ AutoHighlight is an automatic video summarizer utilizing action recognition via 
   - AutoHighlight utilizes Inflated 3D Convolution architecture from [DeepMind](I3D) to classify video snippets (architecture obtained from [this Keras implementation](I3D_keras)).
   - The example weight included in the repo is trained on association football (soccer) matches using the [SoccerNet dataset](SoccerNet-paper) (GitHub repo [here](SoccerNet)).
 
+## BallQ_beta Integration
+
+This branch (`autohighlights`) includes FastAPI-compatible wrappers for seamless integration with the **BallQ_beta** project as a submodule.
+
+**For BallQ_beta integration instructions, see [BALLQ_INTEGRATION.md](BALLQ_INTEGRATION.md)**
+
 ## Features
 
   - Train your own AI video summarizer using your own dataset!
@@ -105,6 +111,40 @@ To use your own model to run an inference on a video file, use the following com
 ```sh
 $ python autohighlight.py -s <videopath> -o <output> -m <your model>
 ```
+
+## FastAPI Integration (BallQ_beta)
+
+AutoHighlight includes FastAPI wrappers (`fastapi_wrapper.py`, `ballq_api.py`) for easy integration with the BallQ_beta pipeline.
+
+### Quick Start for BallQ_beta Integration
+
+In your BallQ_beta application:
+
+```python
+from fastapi import FastAPI
+from autohighlight.ballq_api import router as autohighlight_router
+
+app = FastAPI()
+app.include_router(autohighlight_router)
+```
+
+Or use the setup module:
+
+```python
+from autohighlight.setup import configure_autohighlight, get_autohighlight_router
+
+configure_autohighlight(model_path="models/default.hdf5")
+app.include_router(get_autohighlight_router())
+```
+
+### API Endpoints
+
+- `POST /autohighlight/analyze` - Analyze video and extract highlights
+- `POST /autohighlight/summarize` - Generate summary video
+- `GET /autohighlight/download/{task_id}` - Download processed video
+- `GET /autohighlight/health` - Health check
+
+See [BALLQ_INTEGRATION.md](BALLQ_INTEGRATION.md) for detailed integration instructions.
 
 ### Todo
 
